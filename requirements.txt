@@ -1,0 +1,12 @@
+torch>=2.3.0
+pytorch-lightning>=2.0.0
+tensorboard>=2.13.0
+pandas>=2.0.0
+numpy>=1.24.0
+torch-geometric>=2.3.0
+torch-scatter
+torch-sparse
+git+https://github.com/TorchSpatiotemporal/tsl.git
+matplotlib>=3.7.0
+pyyaml>=6.0
+tqdm>=4.65.0

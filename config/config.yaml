@@ -1,0 +1,110 @@
+# Configuration file for Traffic Prediction STGNN
+
+project:
+  name: "traffic-prediction-stgnn"
+  description: "Spatiotemporal Graph Neural Network for Traffic Prediction"
+  version: "1.0.0"
+
+data:
+  dataset_name: "MetrLA"
+  root_path: "./data"
+  n_nodes: 207
+  n_channels: 1
+  sampling_freq: "5min"
+  
+  # Sliding window parameters
+  window: 12  # lookback window (60 minutes)
+  horizon: 12  # prediction horizon (60 minutes)
+  stride: 1
+  
+  # Data split ratios
+  val_split: 0.1
+  test_split: 0.2
+  
+  # Connectivity parameters
+  similarity_method: "distance"
+  threshold: 0.1
+  include_self: false
+  normalize_axis: 1
+
+model:
+  name: "TimeThenSpaceModel"
+  
+  # Model hyperparameters
+  emb_size: 16
+  hidden_size: 32
+  rnn_layers: 1
+  gnn_kernel: 2
+  
+  # Architecture components
+  encoder:
+    type: "linear"
+  
+  temporal_processor:
+    type: "gru"
+    return_only_last_state: true
+  
+  spatial_processor:
+    type: "diffusion_conv"
+    root_weight: true
+  
+  decoder:
+    type: "mlp"
+    n_layers: 1
+    hidden_multiplier: 2
+
+training:
+  # Optimization
+  optimizer: "adam"
+  learning_rate: 0.001
+  weight_decay: 0.0
+  
+  # Training parameters
+  batch_size: 64
+  max_epochs: 100
+  early_stopping_patience: 10
+  
+  # Hardware
+  accelerator: "auto"  # auto, cpu, gpu, mps
+  devices: 1
+  num_workers: 4
+  
+  # Checkpointing
+  save_top_k: 1
+  monitor_metric: "val_mae"
+  monitor_mode: "min"
+  
+  # Logging
+  log_every_n_steps: 50
+  limit_train_batches: null  # null for full training
+
+evaluation:
+  metrics:
+    - "mae"
+    - "mape"
+    - "rmse"
+    - "r2"
+  
+  # Temporal evaluation points (in minutes)
+  eval_horizons:
+    - 15  # 3 steps
+    - 30  # 6 steps
+    - 60  # 12 steps
+
+visualization:
+  # Plot settings
+  figure_size: [14, 7]
+  dpi: 100
+  style: "seaborn-v0_8-darkgrid"
+  
+  # Network visualization
+  node_size: 25
+  edge_alpha: 0.5
+  edge_width_multiplier: 10
+
+logging:
+  tensorboard:
+    save_dir: "./logs"
+    name: "traffic_stgnn"
+  
+  verbosity: "INFO"  # DEBUG, INFO, WARNING, ERROR
