@@ -92,3 +92,51 @@ class TimeThenSpaceModel(nn.Module):
         x_out = self.decoder(z_emb)
         
         return x_out
+
+def create_model(config: Dict[str, Any], n_nodes: int, input_size: int = 1) -> TimeThenSpaceModel:
+    """
+    Factory function to create model from configuration.
+    
+    Args:
+        config: Model configuration dictionary
+        n_nodes: Number of nodes in the graph
+        input_size: Number of input features
+        
+    Returns:
+        Initialized model
+    """
+    model = TimeThenSpaceModel(
+        input_size=input_size,
+        n_nodes=n_nodes,
+        horizon=config.get('horizon', 12),
+        emb_size=config.get('emb_size', 16),
+        hidden_size=config.get('hidden_size', 32),
+        rnn_layers=config.get('rnn_layers', 1),
+        gnn_kernel=config.get('gnn_kernel', 2)
+    )
+    
+    model.print_architecture()
+    return model
+
+
+def print_architecture(self):
+    """Print model architecture summary."""
+    print("\n" + "="*60)
+    print("TIME-THEN-SPACE MODEL ARCHITECTURE")
+    print("="*60)
+    print(f"Input size: {self.input_size}")
+    print(f"Number of nodes: {self.n_nodes}")
+    print(f"Prediction horizon: {self.horizon}")
+    print(f"Embedding size: {self.emb_size}")
+    print(f"Hidden size: {self.hidden_size}")
+    print("-"*60)
+    
+    total_params = sum(p.numel() for p in self.parameters())
+    trainable_params = sum(p.numel() for p in self.parameters() if p.requires_grad)
+    
+    print(f"Total parameters: {total_params:,}")
+    print(f"Trainable parameters: {trainable_params:,}")
+    print("="*60 + "\n")
+
+# Agregar método a la clase
+# TimeThenSpaceModel.print_architecture = print_architecture
